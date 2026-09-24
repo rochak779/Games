@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Lattoo — ghuma ke dikhao</title>
+    <meta name="description" content="A 90s-style spinning top game. Wind it, throw it, keep it spinning inside the chalk circle." />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪀</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../shared/retro.css" />
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+
+    <header id="hud">
+      <div class="brand">LATTOO<span>'96</span></div>
+      <div class="stats">
+        <div>TIME <b id="time">0.0</b></div>
+        <div>BEST <b id="best">0.0</b></div>
+      </div>
+    </header>
+
+    <div id="message" aria-live="polite"></div>
+
+    <footer id="help">
+      HOLD <kbd>SPACE</kbd> / PRESS TO WIND · RELEASE IN THE <em>GREEN</em> · STEER WITH <kbd>ARROWS</kbd> / DRAG · <kbd>M</kbd> MUTE
+    </footer>
+
+    <div id="crt" aria-hidden="true"></div>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

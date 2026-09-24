@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Gilli Danda — maar ke dikhao</title>
+    <meta name="description" content="A 90s maidan game. Flick the gilli, smack it with the danda, and don't get caught." />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏏</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../shared/retro.css" />
+    <style>
+      /* Messages sit in the sky, clear of the players on the ground. */
+      #message {
+        top: 20%;
+        bottom: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+
+    <header id="hud">
+      <div class="brand">GILLI DANDA<span>'95</span></div>
+      <div class="stats">
+        <div>DANDAS <b id="score">0</b></div>
+        <div>BEST <b id="best">0</b></div>
+      </div>
+    </header>
+
+    <div id="message" aria-live="polite"></div>
+
+    <footer id="help">
+      TAP / <kbd>SPACE</kbd> TO FLICK — RING SMALL = HIGH POP · TAP AGAIN TO HIT — MIDDLE OF THE GILLI GOES FARTHEST ·
+      DON'T GET CAUGHT · <kbd>M</kbd> MUTE
+    </footer>
+
+    <div id="crt" aria-hidden="true"></div>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

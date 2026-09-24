@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guess the Dialogue — ek din, ek dialogue</title>
+    <meta name="description" content="One iconic Bollywood dialogue a day, revealed word by word. Guess the movie in six tries." />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../shared/retro.css" />
+    <style>
+      /* A page of text and a form, not a canvas: let it scroll and select. */
+      html,
+      body {
+        overflow: auto;
+        touch-action: auto;
+      }
+      #hud {
+        position: static;
+        pointer-events: auto;
+        max-width: 720px;
+        margin: 0 auto;
+      }
+      main {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 8px 16px 64px;
+        text-shadow: 2px 2px 0 var(--shadow);
+      }
+      .panel {
+        border: 3px solid var(--ink);
+        background: var(--shadow);
+        box-shadow: 6px 6px 0 var(--magenta);
+        padding: 20px 16px;
+        margin-bottom: 20px;
+      }
+      #quote {
+        margin: 0;
+        font-size: clamp(12px, 3.2vw, 16px);
+        line-height: 2.4;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 10px;
+      }
+      #quote .w {
+        white-space: nowrap;
+      }
+      /* Hidden words render as underscores (the real text isn't in the DOM). */
+      #quote .w.hidden {
+        color: var(--teal);
+      }
+      #quote .w.fresh {
+        color: var(--yellow);
+        animation: pop 0.4s cubic-bezier(0.2, 1.7, 0.4, 1) both;
+      }
+      .hints {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 24px;
+        margin-top: 16px;
+        font-size: 9px;
+        line-height: 1.8;
+        color: var(--teal);
+      }
+      .hints b {
+        color: var(--ink);
+        font-weight: normal;
+      }
+      .tries {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 16px;
+      }
+      .tries span {
+        flex: 1;
+        height: 12px;
+        border: 2px solid var(--ink);
+      }
+      .tries .miss {
+        background: #e63946;
+      }
+      .tries .skip {
+        background: #777;
+      }
+      .tries .hit {
+        background: var(--green);
+      }
+      .field {
+        position: relative;
+      }
+      input,
+      button {
+        font-family: inherit;
+        font-size: 12px;
+      }
+      #guess {
+        width: 100%;
+        padding: 14px 12px;
+        border: 3px solid var(--ink);
+        background: #1b0a2a;
+        color: var(--ink);
+        outline: none;
+      }
+      #guess:focus {
+        border-color: var(--yellow);
+      }
+      #suggest {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        z-index: 2;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        border: 3px solid var(--yellow);
+        border-top: none;
+        background: #1b0a2a;
+        max-height: 260px;
+        overflow-y: auto;
+      }
+      #suggest li {
+        padding: 12px;
+        font-size: 11px;
+        line-height: 1.5;
+        cursor: pointer;
+      }
+      #suggest li[aria-selected='true'] {
+        background: var(--magenta);
+        color: #1b0a2a;
+        text-shadow: none;
+      }
+      .buttons {
+        display: flex;
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .btn {
+        flex: 1;
+        padding: 14px 10px;
+        border: 3px solid var(--ink);
+        background: var(--shadow);
+        color: var(--ink);
+        box-shadow: 4px 4px 0 var(--teal);
+        cursor: pointer;
+        text-shadow: 2px 2px 0 #000;
+      }
+      .btn.primary {
+        background: var(--magenta);
+        box-shadow: 4px 4px 0 var(--yellow);
+      }
+      .btn:active {
+        transform: translate(3px, 3px);
+        box-shadow: 1px 1px 0 var(--teal);
+      }
+      .btn:disabled {
+        opacity: 0.4;
+        cursor: default;
+        transform: none;
+      }
+      #log {
+        margin: 16px 0 0;
+        padding: 0;
+        list-style: none;
+        font-size: 10px;
+        line-height: 2.2;
+      }
+      #log .miss::before {
+        content: '✗ ';
+        color: #e63946;
+      }
+      #log .skip {
+        opacity: 0.6;
+      }
+      #log .skip::before {
+        content: '» ';
+      }
+      #result {
+        text-align: center;
+      }
+      #result h2 {
+        margin: 0 0 12px;
+        font-size: clamp(16px, 5vw, 24px);
+        color: var(--yellow);
+        animation: pop 0.5s cubic-bezier(0.2, 1.7, 0.4, 1) both;
+      }
+      #result .answer {
+        font-size: 12px;
+        line-height: 2;
+        margin: 0 0 16px;
+      }
+      #result .answer small {
+        color: var(--teal);
+        font-size: 9px;
+      }
+      .stat-row {
+        display: flex;
+        justify-content: space-around;
+        margin: 16px 0;
+        font-size: 8px;
+        line-height: 2;
+        color: var(--teal);
+      }
+      .stat-row b {
+        display: block;
+        font-size: 18px;
+        color: var(--ink);
+        font-weight: normal;
+      }
+      #next {
+        font-size: 10px;
+        line-height: 2;
+        margin-top: 16px;
+      }
+      #next b {
+        color: var(--green);
+        font-weight: normal;
+      }
+      .back {
+        display: inline-block;
+        margin-top: 8px;
+        font-size: 10px;
+        color: var(--teal);
+      }
+      .icon-btn {
+        margin-top: 8px;
+        border: none;
+        background: none;
+        color: var(--ink);
+        font-size: 10px;
+        cursor: pointer;
+        padding: 4px 0;
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <header id="hud">
+      <div class="brand">DIALOGUE<span id="num">#1</span></div>
+      <div class="stats">
+        <div>STREAK <b id="streak">0</b></div>
+        <div>WINS <b id="wins">0</b></div>
+        <button id="mute" class="icon-btn" type="button">SOUND ON</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel" aria-label="Today's dialogue">
+        <p id="quote" aria-live="polite"></p>
+        <div class="hints">
+          <div>YEAR <b id="year">????</b></div>
+          <div>SAID BY <b id="actor">??????</b></div>
+        </div>
+      </section>
+
+      <div class="tries" id="tries" aria-hidden="true"></div>
+
+      <section id="play">
+        <div class="field">
+          <input
+            id="guess"
+            type="text"
+            placeholder="WHICH MOVIE?"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="suggest"
+            aria-label="Movie name"
+          />
+          <ul id="suggest" role="listbox" hidden></ul>
+        </div>
+        <div class="buttons">
+          <button id="skip" class="btn" type="button">SKIP »</button>
+          <button id="submit" class="btn primary" type="button" disabled>GUESS</button>
+        </div>
+      </section>
+
+      <section id="result" class="panel" hidden aria-live="polite"></section>
+
+      <ul id="log"></ul>
+
+      <a class="back" href="../">◀ ALL GAMES</a>
+    </main>
+
+    <div id="crt" aria-hidden="true"></div>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

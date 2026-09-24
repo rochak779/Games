@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>90s Games</title>
+    <meta name="description" content="Desi 90s street and courtyard games, playable in the browser." />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕹️</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./shared/retro.css" />
+    <style>
+      html,
+      body {
+        overflow: auto;
+        touch-action: auto;
+      }
+      main {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 40px 16px 64px;
+        text-shadow: 3px 3px 0 var(--shadow);
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: clamp(22px, 6vw, 40px);
+        color: var(--yellow);
+      }
+      h1 span {
+        color: var(--magenta);
+        font-size: 0.45em;
+        vertical-align: super;
+      }
+      p.tag {
+        margin: 0 0 32px;
+        font-size: 11px;
+        line-height: 1.8;
+        color: var(--teal);
+      }
+      .games {
+        display: grid;
+        gap: 16px;
+      }
+      a.card {
+        display: block;
+        padding: 20px;
+        border: 3px solid var(--ink);
+        background: var(--shadow);
+        box-shadow: 6px 6px 0 var(--magenta);
+        color: var(--ink);
+        text-decoration: none;
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+      }
+      a.card:hover,
+      a.card:focus-visible {
+        transform: translate(-3px, -3px);
+        box-shadow: 9px 9px 0 var(--teal);
+        outline: none;
+      }
+      a.card:active {
+        transform: translate(3px, 3px);
+        box-shadow: 2px 2px 0 var(--magenta);
+      }
+      .card h2 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        color: var(--yellow);
+      }
+      .card h2 small {
+        font-size: 10px;
+        color: var(--teal);
+        margin-left: 8px;
+      }
+      .card p {
+        margin: 0;
+        font-size: 10px;
+        line-height: 1.9;
+      }
+      .card .play {
+        display: inline-block;
+        margin-top: 14px;
+        font-size: 11px;
+        color: var(--green);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>90s GAMES<span>'9X</span></h1>
+      <p class="tag">GALI AND AANGAN GAMES. KEYBOARD OR TOUCH.</p>
+      <div class="games">
+        <a class="card" href="./lattoo/">
+          <h2>LATTOO <small>SPINNING TOP</small></h2>
+          <p>Wind the string, throw it in the green, and keep it spinning inside the chalk circle.</p>
+          <span class="play">▶ PLAY</span>
+        </a>
+        <a class="card" href="./pittu/">
+          <h2>PITTU <small>7 STONES</small></h2>
+          <p>Knock down the stack, restack it biggest-first, and dodge the fielders' throws.</p>
+          <span class="play">▶ PLAY</span>
+        </a>
+        <a class="card" href="./gilli-danda/">
+          <h2>GILLI DANDA <small>STICK &amp; GILLI</small></h2>
+          <p>Flick the gilli up, smack it with the danda, and send it far past the fielders without getting caught.</p>
+          <span class="play">▶ PLAY</span>
+        </a>
+        <a class="card" href="./guess-the-dialogue/">
+          <h2>GUESS THE DIALOGUE <small>DAILY</small></h2>
+          <p>One filmi dialogue a day, revealed word by word. Name the movie in six tries and share your score.</p>
+          <span class="play">▶ PLAY</span>
+        </a>
+      </div>
+    </main>
+    <div id="crt" aria-hidden="true"></div>
+  </body>
+</html>
