@@ -126,16 +126,20 @@ function render(animate: boolean) {
         span.textContent = w.text;
         if (animate && !w.always && !shown.has(i)) span.classList.add('fresh');
       } else {
-        span.classList.add('hidden');
-        span.textContent = w.text.replace(/[\p{L}\p{N}]/gu, '_');
+        // Keep leading/trailing punctuation visible; blank out only the word itself.
+        const [, pre, core, post] = w.text.match(/^([^\p{L}\p{N}]*)(.*?)([^\p{L}\p{N}]*)$/u)!;
+        const blank = document.createElement('span');
+        blank.className = 'blank';
+        blank.textContent = core.replace(/[\p{L}\p{N}]/gu, '_');
+        span.append(pre, blank, post);
       }
       return span;
     }),
   );
   shown = vis;
 
-  yearEl.textContent = done || misses >= YEAR_AFTER ? String(puzzle.year) : '????';
-  actorEl.textContent = done || misses >= ACTOR_AFTER ? puzzle.actor.toUpperCase() : '??????';
+  yearEl.textContent = done || misses >= YEAR_AFTER ? String(puzzle.year) : '? ? ?';
+  actorEl.textContent = done || misses >= ACTOR_AFTER ? puzzle.actor : '? ? ?';
 
   triesEl.replaceChildren(
     ...Array.from({ length: MAX_TRIES }, (_, i) => {
@@ -152,7 +156,7 @@ function render(animate: boolean) {
       .map((g) => {
         const li = document.createElement('li');
         li.className = g === null ? 'skip' : 'miss';
-        li.textContent = g ?? 'SKIPPED';
+        li.textContent = g ?? 'Skipped';
         return li;
       }),
   );
@@ -170,16 +174,21 @@ function renderResult() {
   const won = today.status === 'won';
   const pct = stats.played ? Math.round((stats.won / stats.played) * 100) : 0;
   resultEl.innerHTML = `
-    <h2>${won ? (today.guesses.length === 1 ? 'EK NUMBER!' : 'SAHI JAWAB!') : 'ARRE YAAR!'}</h2>
-    <p class="answer">${escapeHtml(puzzle.movie.toUpperCase())}<br /><small>${puzzle.year} · ${escapeHtml(puzzle.actor.toUpperCase())}</small></p>
-    <button id="share" class="btn primary" type="button">SHARE RESULT</button>
-    <div class="stat-row">
-      <div><b>${stats.played}</b>PLAYED</div>
-      <div><b>${pct}%</b>WON</div>
-      <div><b>${stats.streak}</b>STREAK</div>
-      <div><b>${stats.maxStreak}</b>BEST</div>
+    <div class="stub">
+      <span>SHOW #${day + 1}</span>
+      <span>${won ? `${today.guesses.length}/${MAX_TRIES}` : `X/${MAX_TRIES}`}</span>
     </div>
-    <p id="next">NEXT DIALOGUE IN <b id="countdown">--:--:--</b></p>`;
+    <h2>${won ? (today.guesses.length === 1 ? 'Ek Number!' : 'Sahi Jawab!') : 'Arre Yaar!'}</h2>
+    <p class="answer">${escapeHtml(puzzle.movie)}<small>${puzzle.year} · ${escapeHtml(puzzle.actor)}</small></p>
+    <button id="share" class="btn primary" type="button">Share result</button>
+    <div class="perf" aria-hidden="true"></div>
+    <div class="stat-row">
+      <div><b>${stats.played}</b>Played</div>
+      <div><b>${pct}%</b>Won</div>
+      <div><b>${stats.streak}</b>Streak</div>
+      <div><b>${stats.maxStreak}</b>Best</div>
+    </div>
+    <p id="next">Next show in <b id="countdown">--:--:--</b></p>`;
   $('share').addEventListener('click', share);
   tickCountdown();
 }
@@ -242,7 +251,7 @@ function share() {
   const btn = $('share');
   const done = (msg: string) => {
     btn.textContent = msg;
-    setTimeout(() => (btn.textContent = 'SHARE RESULT'), 2000);
+    setTimeout(() => (btn.textContent = 'Share result'), 2000);
   };
   // Native share sheet on phones; clipboard everywhere else.
   if (navigator.share && matchMedia('(pointer: coarse)').matches) {
@@ -250,8 +259,8 @@ function share() {
     return;
   }
   navigator.clipboard?.writeText(text).then(
-    () => done('COPIED!'),
-    () => done('COPY FAILED'),
+    () => done('Copied!'),
+    () => done('Copy failed'),
   );
 }
 
@@ -352,7 +361,7 @@ skipBtn.addEventListener('click', () => record(null));
 
 muteBtn.addEventListener('click', () => {
   sfx.muted = !sfx.muted;
-  muteBtn.textContent = sfx.muted ? 'SOUND OFF' : 'SOUND ON';
+  muteBtn.textContent = sfx.muted ? 'Sound off' : 'Sound on';
 });
 
 render(false);

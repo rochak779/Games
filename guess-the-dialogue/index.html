@@ -5,132 +5,333 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Guess the Dialogue — ek din, ek dialogue</title>
     <meta name="description" content="One iconic Bollywood dialogue a day, revealed word by word. Guess the movie in six tries." />
+    <meta name="theme-color" content="#16090b" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="../shared/retro.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Yatra+One&family=Martel:wght@400;800&family=Oswald:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
-      /* A page of text and a form, not a canvas: let it scroll and select. */
-      html,
+      /* A 90s single-screen talkies: velvet curtains, a film-strip screen,
+         hand-painted poster lettering, and a paper ticket for the result. */
+      :root {
+        --night: #16090b;
+        --velvet: #5e0f1a;
+        --velvet-dark: #2c060c;
+        --marigold: #ffb627;
+        --cream: #fbeedb;
+        --paper: #f4e3c3;
+        --paper-ink: #2a1510;
+        --pink: #ff4f79;
+        --pink-deep: #8f1d3f;
+        --muted: #c7a99a;
+        --hit: #5bd66b;
+        --miss: #ff4f79;
+        --skip: #7a6360;
+        --label: 'Oswald', 'Arial Narrow', sans-serif;
+        --display: 'Yatra One', Georgia, serif;
+        --body: 'Martel', Georgia, serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: var(--night);
+      }
+
       body {
-        overflow: auto;
-        touch-action: auto;
+        margin: 0;
+        min-height: 100vh;
+        color: var(--cream);
+        font-family: var(--body);
+        /* Projector light spilling down from the booth. */
+        background:
+          radial-gradient(900px 480px at 50% -80px, #3b1418 0%, transparent 70%),
+          var(--night);
       }
-      #hud {
-        position: static;
-        pointer-events: auto;
-        max-width: 720px;
+
+      /* Velvet curtains down both sides. */
+      body::before,
+      body::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: clamp(10px, 6vw, 72px);
+        z-index: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(to bottom, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.5)),
+          repeating-linear-gradient(90deg, var(--velvet-dark) 0 6px, var(--velvet) 12px, var(--velvet-dark) 18px);
+      }
+      body::before {
+        left: 0;
+        box-shadow: 8px 0 24px rgba(0, 0, 0, 0.6);
+      }
+      body::after {
+        right: 0;
+        box-shadow: -8px 0 24px rgba(0, 0, 0, 0.6);
+      }
+
+      .wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 680px;
         margin: 0 auto;
+        padding: 20px max(16px, calc(clamp(10px, 6vw, 72px) + 12px)) 56px;
       }
-      main {
-        max-width: 720px;
-        margin: 0 auto;
-        padding: 8px 16px 64px;
-        text-shadow: 2px 2px 0 var(--shadow);
-      }
-      .panel {
-        border: 3px solid var(--ink);
-        background: var(--shadow);
-        box-shadow: 6px 6px 0 var(--magenta);
-        padding: 20px 16px;
+
+      /* ---------- header ---------- */
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 16px;
         margin-bottom: 20px;
+      }
+      .kicker {
+        margin: 0 0 2px;
+        font-family: var(--label);
+        font-size: 12px;
+        letter-spacing: 0.3em;
+        color: var(--marigold);
+      }
+      h1 {
+        margin: 0;
+        font-family: var(--display);
+        font-weight: normal;
+        font-size: clamp(30px, 8vw, 48px);
+        line-height: 1.05;
+        color: var(--marigold);
+        /* Hand-painted poster lettering: a stepped pink extrusion. */
+        text-shadow:
+          1px 1px 0 var(--pink),
+          2px 2px 0 var(--pink),
+          3px 3px 0 var(--pink-deep),
+          4px 4px 0 var(--pink-deep);
+      }
+      .meta {
+        text-align: right;
+        font-family: var(--label);
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        line-height: 1.8;
+        flex-shrink: 0;
+      }
+      .meta b {
+        color: var(--cream);
+        font-weight: 600;
+        font-size: 15px;
+        margin-left: 6px;
+      }
+      .show {
+        display: inline-block;
+        padding: 2px 8px;
+        border: 1.5px solid var(--marigold);
+        color: var(--marigold);
+        border-radius: 3px;
+      }
+      #mute {
+        display: block;
+        margin: 4px 0 0 auto;
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--muted);
+        font: inherit;
+        cursor: pointer;
+      }
+      #mute:hover {
+        color: var(--cream);
+      }
+
+      /* ---------- the screen: a strip of film ---------- */
+
+      .reel {
+        position: relative;
+        padding: 26px 18px;
+        background: #0c0506;
+        border-radius: 4px;
+        box-shadow:
+          0 0 0 1px #3a1d1f,
+          0 20px 60px -20px rgba(255, 182, 39, 0.25);
+      }
+      /* Sprocket holes along the top and bottom edges. */
+      .reel::before,
+      .reel::after {
+        content: '';
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        height: 9px;
+        background: repeating-linear-gradient(90deg, #d9c9a6 0 12px, transparent 12px 24px);
+        opacity: 0.75;
+        border-radius: 2px;
+      }
+      .reel::before {
+        top: 8px;
+      }
+      .reel::after {
+        bottom: 8px;
+      }
+      .screen {
+        position: relative;
+        padding: 26px 22px 18px;
+        border-radius: 3px;
+        background:
+          radial-gradient(120% 90% at 50% 0%, rgba(255, 214, 140, 0.16), transparent 70%),
+          #1f1012;
+        box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
       }
       #quote {
         margin: 0;
-        font-size: clamp(12px, 3.2vw, 16px);
-        line-height: 2.4;
+        font-size: clamp(18px, 4.4vw, 24px);
+        font-weight: 800;
+        line-height: 1.7;
         display: flex;
         flex-wrap: wrap;
-        gap: 4px 10px;
+        gap: 2px 0.45em;
       }
       #quote .w {
         white-space: nowrap;
       }
-      /* Hidden words render as underscores (the real text isn't in the DOM). */
-      #quote .w.hidden {
-        color: var(--teal);
+      /* Hidden words are underscores in the DOM (never the real text),
+         drawn as a blank line to fill in. */
+      #quote .blank {
+        color: transparent;
+        background: linear-gradient(rgba(255, 182, 39, 0.55), rgba(255, 182, 39, 0.55)) 0 82% / 100% 2px no-repeat;
       }
       #quote .w.fresh {
-        color: var(--yellow);
-        animation: pop 0.4s cubic-bezier(0.2, 1.7, 0.4, 1) both;
+        color: var(--marigold);
+        animation: flicker 0.6s ease-out both;
+      }
+      @keyframes flicker {
+        0% {
+          opacity: 0;
+          filter: blur(3px);
+        }
+        30% {
+          opacity: 0.7;
+        }
+        45% {
+          opacity: 0.3;
+        }
+        100% {
+          opacity: 1;
+          filter: none;
+        }
       }
       .hints {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px 24px;
-        margin-top: 16px;
-        font-size: 9px;
-        line-height: 1.8;
-        color: var(--teal);
+        gap: 8px;
+        margin-top: 18px;
       }
-      .hints b {
-        color: var(--ink);
-        font-weight: normal;
+      .chit {
+        font-family: var(--label);
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 2px;
+        background: rgba(255, 182, 39, 0.1);
+        border: 1px dashed rgba(255, 182, 39, 0.5);
+        color: var(--muted);
       }
+      .chit b {
+        color: var(--marigold);
+        font-weight: 600;
+        margin-left: 4px;
+      }
+
+      /* ---------- six tries ---------- */
+
       .tries {
         display: flex;
         gap: 6px;
-        margin-bottom: 16px;
+        margin: 18px 0;
       }
       .tries span {
         flex: 1;
-        height: 12px;
-        border: 2px solid var(--ink);
+        height: 10px;
+        border-radius: 2px;
+        background: rgba(251, 238, 219, 0.1);
+        border: 1px solid rgba(251, 238, 219, 0.25);
       }
       .tries .miss {
-        background: #e63946;
+        background: var(--miss);
+        border-color: var(--miss);
       }
       .tries .skip {
-        background: #777;
+        background: var(--skip);
+        border-color: var(--skip);
       }
       .tries .hit {
-        background: var(--green);
+        background: var(--hit);
+        border-color: var(--hit);
       }
+
+      /* ---------- guessing ---------- */
+
       .field {
         position: relative;
       }
-      input,
-      button {
-        font-family: inherit;
-        font-size: 12px;
-      }
       #guess {
         width: 100%;
-        padding: 14px 12px;
-        border: 3px solid var(--ink);
-        background: #1b0a2a;
-        color: var(--ink);
+        padding: 14px 16px;
+        border: 0;
+        border-radius: 3px;
+        background: var(--paper);
+        color: var(--paper-ink);
+        font-family: var(--label);
+        font-size: 18px;
+        letter-spacing: 0.04em;
         outline: none;
+        box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.15);
+      }
+      #guess::placeholder {
+        color: #8a6f5e;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        font-size: 15px;
       }
       #guess:focus {
-        border-color: var(--yellow);
+        box-shadow:
+          inset 0 -3px 0 rgba(0, 0, 0, 0.15),
+          0 0 0 3px var(--marigold);
       }
       #suggest {
         position: absolute;
         left: 0;
         right: 0;
-        top: 100%;
-        z-index: 2;
+        top: calc(100% + 4px);
+        z-index: 5;
         margin: 0;
-        padding: 0;
+        padding: 4px 0;
         list-style: none;
-        border: 3px solid var(--yellow);
-        border-top: none;
-        background: #1b0a2a;
-        max-height: 260px;
+        border-radius: 3px;
+        background: var(--paper);
+        color: var(--paper-ink);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+        max-height: 280px;
         overflow-y: auto;
       }
       #suggest li {
-        padding: 12px;
-        font-size: 11px;
-        line-height: 1.5;
+        padding: 10px 16px;
+        font-family: var(--label);
+        font-size: 16px;
         cursor: pointer;
       }
       #suggest li[aria-selected='true'] {
-        background: var(--magenta);
-        color: #1b0a2a;
-        text-shadow: none;
+        background: var(--pink);
+        color: #fff;
       }
       .buttons {
         display: flex;
@@ -139,157 +340,266 @@
       }
       .btn {
         flex: 1;
-        padding: 14px 10px;
-        border: 3px solid var(--ink);
-        background: var(--shadow);
-        color: var(--ink);
-        box-shadow: 4px 4px 0 var(--teal);
+        padding: 13px 10px;
+        border-radius: 3px;
+        font-family: var(--label);
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
         cursor: pointer;
-        text-shadow: 2px 2px 0 #000;
+        transition:
+          transform 0.08s ease,
+          box-shadow 0.08s ease;
+      }
+      .btn.ghost {
+        background: transparent;
+        color: var(--marigold);
+        border: 1.5px solid var(--marigold);
       }
       .btn.primary {
-        background: var(--magenta);
-        box-shadow: 4px 4px 0 var(--yellow);
+        background: var(--marigold);
+        color: var(--paper-ink);
+        border: 0;
+        box-shadow: 4px 4px 0 var(--pink);
       }
-      .btn:active {
+      .btn.primary:active {
         transform: translate(3px, 3px);
-        box-shadow: 1px 1px 0 var(--teal);
+        box-shadow: 1px 1px 0 var(--pink);
       }
       .btn:disabled {
-        opacity: 0.4;
+        opacity: 0.35;
         cursor: default;
         transform: none;
       }
+      .btn:focus-visible,
+      #mute:focus-visible,
+      .back:focus-visible {
+        outline: 2px solid var(--cream);
+        outline-offset: 3px;
+      }
+
       #log {
         margin: 16px 0 0;
         padding: 0;
         list-style: none;
-        font-size: 10px;
-        line-height: 2.2;
+        font-family: var(--label);
+        font-size: 15px;
+        line-height: 2;
+        letter-spacing: 0.03em;
+      }
+      #log .miss {
+        color: var(--muted);
       }
       #log .miss::before {
-        content: '✗ ';
-        color: #e63946;
+        content: '✕';
+        color: var(--pink);
+        margin-right: 10px;
       }
       #log .skip {
-        opacity: 0.6;
+        color: var(--skip);
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        font-size: 13px;
       }
       #log .skip::before {
-        content: '» ';
+        content: '»';
+        margin-right: 10px;
       }
+
+      /* ---------- result: a cinema ticket ---------- */
+
       #result {
+        position: relative;
+        margin: 22px 0 0;
+        padding: 0 24px 22px;
         text-align: center;
+        color: var(--paper-ink);
+        background: var(--paper);
+        border-radius: 4px;
+        animation: slide 0.5s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+      }
+      @keyframes slide {
+        from {
+          transform: translateY(24px) rotate(-1.5deg);
+          opacity: 0;
+        }
+      }
+      #result .stub {
+        display: flex;
+        justify-content: space-between;
+        margin: 0 -24px 14px;
+        padding: 10px 24px;
+        border-radius: 4px 4px 0 0;
+        background: var(--pink);
+        color: #fff;
+        font-family: var(--label);
+        font-weight: 600;
+        font-size: 13px;
+        letter-spacing: 0.24em;
       }
       #result h2 {
-        margin: 0 0 12px;
-        font-size: clamp(16px, 5vw, 24px);
-        color: var(--yellow);
-        animation: pop 0.5s cubic-bezier(0.2, 1.7, 0.4, 1) both;
+        margin: 0;
+        font-family: var(--display);
+        font-weight: normal;
+        font-size: clamp(30px, 8vw, 40px);
+        color: var(--pink);
+        text-shadow: 2px 2px 0 var(--pink-deep);
       }
       #result .answer {
-        font-size: 12px;
-        line-height: 2;
-        margin: 0 0 16px;
+        margin: 6px 0 16px;
+        font-weight: 800;
+        font-size: 20px;
+        line-height: 1.4;
       }
       #result .answer small {
-        color: var(--teal);
-        font-size: 9px;
+        display: block;
+        font-family: var(--label);
+        font-weight: 500;
+        font-size: 13px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #7a5b4a;
+      }
+      #result .btn {
+        width: 100%;
+        box-shadow: 4px 4px 0 var(--paper-ink);
+      }
+      /* Tear-off line with punched notches at each end. */
+      #result .perf {
+        position: relative;
+        margin: 22px -24px 16px;
+        border-top: 2px dashed rgba(42, 21, 16, 0.3);
+      }
+      #result .perf::before,
+      #result .perf::after {
+        content: '';
+        position: absolute;
+        top: -12px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--night);
+      }
+      #result .perf::before {
+        left: -11px;
+      }
+      #result .perf::after {
+        right: -11px;
       }
       .stat-row {
         display: flex;
         justify-content: space-around;
-        margin: 16px 0;
-        font-size: 8px;
-        line-height: 2;
-        color: var(--teal);
+        font-family: var(--label);
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #7a5b4a;
       }
       .stat-row b {
         display: block;
-        font-size: 18px;
-        color: var(--ink);
+        font-family: var(--display);
         font-weight: normal;
+        font-size: 26px;
+        letter-spacing: 0;
+        color: var(--paper-ink);
       }
       #next {
-        font-size: 10px;
-        line-height: 2;
-        margin-top: 16px;
+        margin: 14px 0 0;
+        font-family: var(--label);
+        font-size: 13px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
       }
       #next b {
-        color: var(--green);
-        font-weight: normal;
+        color: var(--pink);
+        font-weight: 600;
       }
+
       .back {
         display: inline-block;
-        margin-top: 8px;
-        font-size: 10px;
-        color: var(--teal);
+        margin-top: 24px;
+        font-family: var(--label);
+        font-size: 13px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+        text-decoration: none;
       }
-      .icon-btn {
-        margin-top: 8px;
-        border: none;
-        background: none;
-        color: var(--ink);
-        font-size: 10px;
-        cursor: pointer;
-        padding: 4px 0;
+      .back:hover {
+        color: var(--marigold);
       }
+
       [hidden] {
         display: none !important;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        #quote .w.fresh,
+        #result {
+          animation: none;
+        }
       }
     </style>
   </head>
   <body>
-    <header id="hud">
-      <div class="brand">DIALOGUE<span id="num">#1</span></div>
-      <div class="stats">
-        <div>STREAK <b id="streak">0</b></div>
-        <div>WINS <b id="wins">0</b></div>
-        <button id="mute" class="icon-btn" type="button">SOUND ON</button>
-      </div>
-    </header>
-
-    <main>
-      <section class="panel" aria-label="Today's dialogue">
-        <p id="quote" aria-live="polite"></p>
-        <div class="hints">
-          <div>YEAR <b id="year">????</b></div>
-          <div>SAID BY <b id="actor">??????</b></div>
+    <div class="wrap">
+      <header>
+        <div>
+          <p class="kicker">EK DIN · EK DIALOGUE</p>
+          <h1>Guess the Dialogue</h1>
         </div>
-      </section>
-
-      <div class="tries" id="tries" aria-hidden="true"></div>
-
-      <section id="play">
-        <div class="field">
-          <input
-            id="guess"
-            type="text"
-            placeholder="WHICH MOVIE?"
-            autocomplete="off"
-            autocapitalize="off"
-            spellcheck="false"
-            role="combobox"
-            aria-autocomplete="list"
-            aria-expanded="false"
-            aria-controls="suggest"
-            aria-label="Movie name"
-          />
-          <ul id="suggest" role="listbox" hidden></ul>
+        <div class="meta">
+          <span class="show">Show <span id="num">#1</span></span>
+          <div>Streak<b id="streak">0</b></div>
+          <div>Wins<b id="wins">0</b></div>
+          <button id="mute" type="button">Sound on</button>
         </div>
-        <div class="buttons">
-          <button id="skip" class="btn" type="button">SKIP »</button>
-          <button id="submit" class="btn primary" type="button" disabled>GUESS</button>
-        </div>
-      </section>
+      </header>
 
-      <section id="result" class="panel" hidden aria-live="polite"></section>
+      <main>
+        <section class="reel" aria-label="Today's dialogue">
+          <div class="screen">
+            <p id="quote" aria-live="polite"></p>
+            <div class="hints">
+              <span class="chit">Year<b id="year">? ? ?</b></span>
+              <span class="chit">Said by<b id="actor">? ? ?</b></span>
+            </div>
+          </div>
+        </section>
 
-      <ul id="log"></ul>
+        <div class="tries" id="tries" aria-hidden="true"></div>
 
-      <a class="back" href="../">◀ ALL GAMES</a>
-    </main>
+        <section id="play">
+          <div class="field">
+            <input
+              id="guess"
+              type="text"
+              placeholder="Which movie?"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              role="combobox"
+              aria-autocomplete="list"
+              aria-expanded="false"
+              aria-controls="suggest"
+              aria-label="Movie name"
+            />
+            <ul id="suggest" role="listbox" hidden></ul>
+          </div>
+          <div class="buttons">
+            <button id="skip" class="btn ghost" type="button">Skip »</button>
+            <button id="submit" class="btn primary" type="button" disabled>Guess</button>
+          </div>
+        </section>
 
-    <div id="crt" aria-hidden="true"></div>
+        <section id="result" hidden aria-live="polite"></section>
+
+        <ul id="log"></ul>
+
+        <a class="back" href="../">◀ All games</a>
+      </main>
+    </div>
 
     <script type="module" src="./main.ts"></script>
   </body>
