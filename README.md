@@ -31,6 +31,13 @@ styling and effects (particles, screen shake, synth sounds, best scores) are in
   The 60 dialogues live in `guess-the-dialogue/data.ts` and loop after 60
   days; words marked `*` are giveaways held back until last.
 
+- **Galli Snake** (`/galli-snake/`) — snake in a Mumbai lane. Steer the
+  dabbawala (arrows, WASD or swipe) to grab vada pav; each one adds a tiffin to
+  the chain, and every fifth one speeds things up. Walls and your own tiffins
+  end the run. After six vada pav a stray cow starts wandering in: she blocks
+  two cells, blinks before she leaves, and never lands close to you. `P`
+  pauses.
+
 ## Develop
 
 ```
@@ -42,6 +49,12 @@ npm run dev
 
 ```
 npm run build
+```
+
+Tests (Galli Snake's game logic):
+
+```
+npm test
 ```
 
 Static output in `dist/`. Deploys to Vercel with zero config.
