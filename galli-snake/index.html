@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Galli Snake — dabbawala dash</title>
+    <meta name="description" content="A 90s gali game. Steer the dabbawala through a Mumbai lane, grab vada pav, grow your tiffin chain and dodge the stray cows." />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐍</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../shared/retro.css" />
+    <style>
+      /* A fixed 20x20 lane rather than a full-screen scene: centre the board
+         between the HUD and the help line. */
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .stage {
+        position: relative;
+        width: min(92vw, calc(100vh - 150px), 640px);
+        width: min(92vw, calc(100dvh - 150px), 640px);
+        aspect-ratio: 1;
+        margin-top: 24px;
+      }
+      #game {
+        position: absolute;
+        border: 3px solid var(--ink);
+        box-shadow: 6px 6px 0 var(--shadow);
+        background: #101014;
+      }
+      #message {
+        position: absolute;
+        top: 50%;
+        bottom: auto;
+        transform: translate(-50%, -50%);
+        width: 88%;
+        font-size: clamp(8px, 1.9vmin, 13px);
+      }
+      #message .big {
+        font-size: 2.2em;
+      }
+      #message .sub {
+        margin-top: 6px;
+      }
+      #message .blink {
+        margin-top: 18px;
+      }
+      #message.hidden {
+        display: none;
+      }
+      #toast {
+        position: absolute;
+        top: 11%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-4px);
+        background: var(--yellow);
+        color: var(--shadow);
+        font-size: clamp(8px, 1.6vmin, 11px);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        white-space: nowrap;
+        padding: 8px 12px;
+        box-shadow: 3px 3px 0 var(--shadow);
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          opacity 180ms ease,
+          transform 180ms ease;
+      }
+      #toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .stats b.live-best {
+        color: var(--yellow);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #toast,
+        #toast.show {
+          transition: none;
+          transform: translateX(-50%);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header id="hud">
+      <div class="brand">GALLI SNAKE<span>'97</span></div>
+      <div class="stats">
+        <div>SCORE <b id="score">0</b></div>
+        <div>BEST <b id="best">0</b></div>
+      </div>
+    </header>
+
+    <main class="stage">
+      <canvas id="game" role="img" aria-label="Galli Snake board: a Mumbai lane where the dabbawala collects vada pav"></canvas>
+      <div id="message" role="status" aria-live="polite"></div>
+      <div id="toast" aria-hidden="true"></div>
+    </main>
+
+    <footer id="help">
+      STEER: <kbd>ARROWS</kbd>/<kbd>WASD</kbd> OR SWIPE · GRAB <em>VADA PAV</em> · AVOID WALLS, TIFFINS &amp; COWS ·
+      <kbd>P</kbd> PAUSE · <kbd>M</kbd> MUTE
+    </footer>
+
+    <div id="crt" aria-hidden="true"></div>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
