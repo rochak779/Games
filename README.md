@@ -1,60 +1,36 @@
 # Games
 
-Small 90s-style desi games that run in the browser. Keyboard or touch, no
-backend, and nothing to install to play.
+**Five small 90s-style desi games that run in the browser: street games from an Indian childhood, plus a daily Bollywood puzzle.**
 
-Each game lives in its own folder with an `index.html` and a `main.ts`. Any
-folder with an `index.html` is picked up by the build automatically. Shared
-styling and effects (particles, screen shake, synth sounds, best scores) are in
-`shared/`. The menu at `/` links to every game.
+Not deployed yet; runs locally (see below).
 
-- **Lattoo** (`/lattoo/`) — a spinning top. Hold to wind the string,
-  release while the needle is in the green, then steer (arrows or drag) to keep
-  it inside the chalk circle until it wobbles over.
-- **Pittu** (`/pittu/`) — seven stones. Knock the stack down (drag back
-  and release, or arrows + hold Space), then restack the stones biggest-first
-  while the fielders try to hit you. A red target turns solid when a throw is
-  locked in — that's your cue to dodge. Each round adds speed, and more
-  fielders every other round.
+<!-- TODO(Rochak): add a screenshot of the game menu or one game at docs/readme/screenshot.png, then uncomment the line below. -->
+<!-- ![Games menu](docs/readme/screenshot.png) -->
 
-- **Gilli Danda** (`/gilli-danda/`) — tap to flick the gilli up (smaller
-  ring = higher pop), tap again to hit it (the middle of the gilli goes
-  farthest). Distance is scored in dandas. A catch is out; so are 3 misses.
-  Lobs give fielders time to run under them, low drives risk the fielder in the
-  way. More fielders join every 3 hits.
+## The problem
 
-- **Guess the Dialogue** (`/guess-the-dialogue/`) — a daily puzzle. One
-  Bollywood dialogue (paraphrased, in Hinglish) is revealed word by word; name
-  the movie in six tries from an autocomplete list. Each miss or skip uncovers
-  more words, the year shows after two misses and the actor after four. Everyone
-  gets the same dialogue on the same day, and Share copies an emoji result grid.
-  The 60 dialogues live in `guess-the-dialogue/data.ts` and loop after 60
-  days; words marked `*` are giveaways held back until last.
+Lattoo, pittu and gilli danda were what a whole generation played in the lanes, and they're rarely seen in games today. These are quick, nostalgic versions you can play in a browser tab, on a keyboard or a phone, with nothing to install.
 
-- **Galli Snake** (`/galli-snake/`) — snake in a Mumbai lane. Steer the
-  dabbawala (arrows, WASD or swipe) to grab vada pav; each one adds a tiffin to
-  the chain, and every fifth one speeds things up. Walls and your own tiffins
-  end the run. After six vada pav a stray cow starts wandering in: she blocks
-  two cells, blinks before she leaves, and never lands close to you. `P`
-  pauses.
+## What it does
 
-## Develop
+- **Lattoo:** wind and release a spinning top at the right moment, then steer it to keep it inside the chalk circle.
+- **Pittu (seven stones):** knock the stack down, then restack it biggest-first while dodging the fielders' throws.
+- **Gilli Danda:** flick the gilli up and hit it as far as you can, without getting caught.
+- **Guess the Dialogue:** a daily puzzle. A Bollywood dialogue is revealed word by word, and you have six tries to name the film. Everyone gets the same one each day, with a shareable emoji result.
+- **Galli Snake:** snake in a Mumbai lane. Guide the dabbawala to grab vada pav, and watch out for the stray cow.
+
+<details>
+<summary><strong>Tech stack & running locally</strong></summary>
+
+**Stack:** TypeScript and Vite, no framework and no backend. Each game is a folder with its own `index.html` and `main.ts`, and any folder with an `index.html` is picked up by the build automatically. Shared effects (particles, screen shake, synth sounds, best scores) live in `shared/`.
 
 ```
 npm install
-npm run dev
+npm run dev      # the menu at / links to every game
+npm run build    # static output in dist/, deploys to Vercel with zero config
+npm test         # Galli Snake's game logic
 ```
 
-## Build
+Guess the Dialogue's 60 dialogues live in `guess-the-dialogue/data.ts` and loop after 60 days.
 
-```
-npm run build
-```
-
-Tests (Galli Snake's game logic):
-
-```
-npm test
-```
-
-Static output in `dist/`. Deploys to Vercel with zero config.
+</details>
