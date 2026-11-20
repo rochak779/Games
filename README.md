@@ -34,3 +34,7 @@ npm test         # Galli Snake's game logic
 Guess the Dialogue's 60 dialogues live in `guess-the-dialogue/data.ts` and loop after 60 days.
 
 </details>
+
+---
+
+Built by [Rochak Agarwal](https://www.rochakagarwal.com). More of my work is at [rochakagarwal.com](https://www.rochakagarwal.com).
